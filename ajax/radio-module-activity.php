@@ -1,20 +1,22 @@
 <?php
-    require_once("class.transmisiondto.php");
+    require_once("../pgs/class.hearditem.php");
+    require_once("../pgs/class.radiomodule.php");
+    require_once("../pgs/class.mmdvmlog.php");
+    require_once("../config.php");
 
     header("Content-Type: application/json");
 
-    $transmissions = array();
-    for($i=1; $i < 11; $i++)
-    {
-        $t = new TransmissionDTO();
-        $t->_time = date("Y-m-d H:i:s");
-        $t->_mode = $i;
-        $t->_callsign = $i;
-        $t->_target = $i;
-        $t->_source = $i;
+    $heardList = array();
+    $moduleId = $_GET["id"];
 
-        array_push($transmissions, $t);
+    if(isset($moduleId) && array_key_exists($moduleId, $RadioModules))
+    {
+        $radioModule = new RadioModule($RadioModules[$moduleId]["mmdvm.ini"]);
+        $radioModule->init();
+        $logPath = $RadioModules[$moduleId]["logpath"] . "/" . $radioModule->getLogFileName();
+        $logFile = new MMDVMLog($logPath);
+        $heardList = $logFile->getHeardList();
     }
 
-    echo json_encode($transmissions);
+    echo json_encode($heardList)
 ?>

@@ -22,5 +22,10 @@ class RadioModule
 
         return $callsign . "-" . $module;
     }
+
+    public function getLogFileName()
+    {
+        return $this->_conf->getConfigItem("Log", "FileRoot") . "-" . date("Y-m-d") . ".log";
+    }
 }
 ?>

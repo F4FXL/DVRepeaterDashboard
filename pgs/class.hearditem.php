@@ -1,7 +1,8 @@
 <?php
-class TransmissionDTO
+class HeardItem
 {
     public $_time;
+    public $_duration;
     public $_mode;
     public $_callsign;
     public $_target;
