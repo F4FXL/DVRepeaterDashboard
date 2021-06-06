@@ -6,5 +6,6 @@ class TransmissionDTO
     public $_callsign;
     public $_target;
     public $_source;
+    public $_berorloss;
 }
 ?>

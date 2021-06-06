@@ -1,21 +1,22 @@
-<?php
-    require_once("class.radiomodule.php");
-    $i = 0;
-    foreach($RadioModules as $radioModule)
-    {
-        $id = "radio-module-activity-" . ++$i;
-        $radioModuleConf = new RadioModule($radioModule["mmdvm.ini"]);
-        $radioModuleConf->init();
-?>
-        <div class="row justify-content-md-center">
-            <table class="table table-hover table-sm table-responsive-md" id="<?php echo $id ?>"
-                    data-url="/ajax/radio-module-activity.php"
+
+<div class="row justify-content-md-center">
+    <?php
+        require_once("class.radiomodule.php");
+        $i = 0;
+        foreach($RadioModules as $radioModule)
+        {
+            $tableid = "radio-module-activity-" . ++$i;
+            $radioModuleConf = new RadioModule($radioModule["mmdvm.ini"]);
+            $radioModuleConf->init();
+    ?>
+        <div class="table-responsive col-md">
+            <table class="table table-hover table-sm table-responsive-md" id="<?php echo $tableid ?>"
+                    data-url="/ajax/radio-module-activity.php?id=<?php echo $i;?>"
                     data-toggle="table"
                     data-show-refresh="false"
                     data-show-auto-refresh="false"
                     data-auto-refresh-interval="1"
-                    data-auto-refresh="true"
-                    >
+                    data-auto-refresh="true">
                 <thead class="thead-light">
                     <tr>
                         <th colspan="5" scope="col"><?php echo $radioModuleConf->getCallsign(); ?></th>
@@ -30,6 +31,7 @@
                 </thead>
             </table>
         </div>
-<?php
-    }
-?>
+    <?php
+        }
+    ?>
+</div>
