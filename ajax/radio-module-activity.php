@@ -4,7 +4,8 @@
     require_once("../pgs/class.mmdvmlog.php");
     require_once("../config.php");
 
-    // header("Content-Type: application/json");
+    header("Content-Type: application/json");
+    header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 
     $heardList = array();
     $moduleId = $_GET["id"];
