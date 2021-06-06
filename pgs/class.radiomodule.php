@@ -25,7 +25,7 @@ class RadioModule
 
     public function getLogFileName()
     {
-        return $this->_conf->getConfigItem("Log", "FileRoot") . "-" . date("Y-m-d") . ".log";
+        return $this->_conf->getConfigItem("Log", "FileRoot") . "-" . gmdate("Y-m-d") . ".log";
     }
 }
 ?>
