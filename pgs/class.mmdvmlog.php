@@ -12,67 +12,145 @@ class MMDVMLog
     private function getShortMMDVMLog()
     {
         // Open Logfile and copy loglines into LogLines-Array()
-        $logLines = explode("\n", `egrep -h "from|end|watchdog|lost|Alias|0000" $this->_logFilePath | grep -v "data header" | tail -20`);
-        $logLines = array_reverse($logLines);
-        return $logLines;
+        $logLines = explode("\n", `egrep -h "from|end|watchdog|lost|Alias|0000" $this->_logFilePath | grep -v "data header"`);
+        return array_reverse($logLines);
     }
 
     public function getHeardList()
     {
         $logLines = $this->getShortMMDVMLog();
         $heardList = array();
-        $i = 0;
+        $heardCalls = array();
+        $heardItem = null;
+        $tempItem = new HeardItem();
 
         foreach ($logLines as $logLine) {
             if (!$this->isValidLine($logLine)) {
                 continue;
             }
 
-            $heardItem = null;
+            $parseOk = false;
 
-            if (strpos($logLine, "RF header")  && $i == 0) {
-                //TODO: Someone is currently TXing, handle this later
-            }
-
-            if (strpos($logLine, "end of")) {
+            if (strpos($logLine, "RF header") || strpos($logLine, "network header")) {
                 if (strpos($logLine, "D-Star")) {
-                    $heardItem = $this->parseDStar($logLine);
+                    $parseOk = $this->parseDStarSOT($logLine, $tempItem);
+                    $heardItem = $tempItem;
+                }
+            } elseif (strpos($logLine, "end of")) {
+                if (strpos($logLine, "D-Star")) {
+                    $parseOk = $this->parseDStarEOT($logLine, $tempItem);
+                    $heardItem = $tempItem;
+                }
+            } elseif (strpos($logLine, "watchdog has expired")) {
+                if (strpos($logLine, "D-Star")) {
+                    $parseOk = $this->parseDStarTO($logLine, $tempItem);
                 }
             }
 
-            if (isset($heardItem)) {
-                $heardList[] = $heardItem;
+            if ($parseOk && isset($heardItem)) {
+                if (!in_array($heardItem->_callsign, $heardCalls, true)) { //only push the last transmission of specified callsign
+                    $heardCalls[] = $heardItem->_callsign;
+                    $heardList[] = $heardItem;
+                }
+                $heardItem = null;
+                $tempItem = new HeardItem();
             }
         }
 
         return $heardList;
     }
 
-    // M: 2021-06-06 10:18:29.533 D-Star, received RF end of transmission from F5JFA   /705  to CQCQCQ  , 2.4 seconds, BER: 0.0%, RSSI: -95/-94/-94 dBm
-    // M: 2021-06-06 10:18:24.444 D-Star, received RF end of transmission from F4FXL   /ID51 to CQCQCQ  , 38.1 seconds, BER: 0.0%
-    // M: 2021-06-06 11:18:25.362 D-Star, received network end of transmission from F4FXL   /ID51 to CQCQCQ  , 0.5 seconds, 0% packet loss, BER: 0.0%
-    public function parseDStar($logLine)
+    // M: 2021-06-06 09:24:48.507 D-Star, network watchdog has expired, 18.8 seconds, 10% packet loss, BER: 0.0%
+    // M: 2021-06-06 09:22:22.619 D-Star, network watchdog has expired, 33.2 seconds, 3% packet loss, BER: 0.0%
+    // M: 2021-06-06 09:21:29.025 D-Star, network watchdog has expired, 3.6 seconds, 0% packet loss, BER: 0.0%
+    // M: 2021-06-06 09:21:24.917 D-Star, network watchdog has expired, 2.2 seconds, 0% packet loss, BER: 0.0%
+    // M: 2021-06-06 09:21:21.437 D-Star, network watchdog has expired, 47.8 seconds, 3% packet loss, BER: 0.0%
+    // M: 2021-06-06 09:19:01.073 D-Star, network watchdog has expired, 1.2 seconds, 95% packet loss, BER: 0.0%
+    // M: 2021-06-06 09:18:30.186 D-Star, network watchdog has expired, 4.7 seconds, 0% packet loss, BER: 0.0%
+    private function parseDStarTO($logLine, $heardItem)
     {
-        $regex = '/M: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) D-Star, received (RF|network) end of transmission from ([A-Z\d ]{8}\/[A-Z\d ]{4}) to ([A-Z\d ]{8}), (\d{1,5}.\d) seconds, (([0-9]{1,5}%) packet loss, ){0,1}BER: ([0-9]{1,5}.[0-9])%(, RSSI: (-\d{0,3})\/(-\d{0,3})\/(-\d{0,3}) dBm){0,1}/m';
+        $regex = '/M: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).\d{3} D-Star, (RF|network) watchdog has expired, (\d{1,5}.\d) seconds,  (\d{0,2})% packet loss, BER: ([0-9]{1,5}.[0-9])%/m';
 
         preg_match($regex, $logLine, $matches, PREG_OFFSET_CAPTURE, 0);
 
         if (count($matches)) {
-            $heardItem = new HeardItem();
-
             $isRF = $matches[2][0] == "RF";
-            $heardItem->_time = $matches[1][0];
-            $heardItem->_duration = $matches[5][0];
+            if (!isset($heardItem->_time)) {
+                $heardItem->_time = $this->makeDateLocal($matches[1][0]);
+            }
+            $heardItem->_duration = $matches[3][0] . "s (TO)";
+            $heardItem->_mode = "D-Star";
+            $heardItem->_source = $isRF? "RF" : "Net";
+            $heardItem->_berorloss = ($isRF? $matches[5][0] : $matches[4][0]) . "%";
+            $heardItem->_timedout = true;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    // M: 2021-06-06 15:39:57.666 D-Star, received network header from F4FXL   /IC92 to CQCQCQ   via DCS208 C
+    // M: 2021-06-06 15:39:37.660 D-Star, received RF header from F4FXL   /IC92 to CQCQCQ
+    // M: 2021-06-06 13:26:24.212 D-Star, received RF header from DL3CM   /9700 to /DM0HMBA
+    private function parseDStarSOT($logLine, $heardItem)
+    {
+        $regex = '/M: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).\d{3} D-Star, received (RF|network) header from ([A-Z\d ]{8}\/[A-Z\d ]{4}) to (\/{0,1}[A-Z\d ]{7,8})/m';
+
+        preg_match($regex, $logLine, $matches, PREG_OFFSET_CAPTURE, 0);
+
+        if (count($matches)) {
+            $isRF = $matches[2][0] == "RF";
+            $heardItem->_time = $this->makeDateLocal($matches[1][0]);
+            $heardItem->_source = $isRF? "RF" : "Net";
+            $heardItem->_mode = "D-Star";
+            $heardItem->_callsign = $matches[3][0];
+            $heardItem->_target = $matches[4][0];
+            if (!$heardItem->_timedout) {
+                $heardItem->_duration = "TXing";
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    // M: 2021-06-06 10:18:29.533 D-Star, received RF end of transmission from F5JFA   /705  to CQCQCQ  , 2.4 seconds, BER: 0.0%, RSSI: -95/-94/-94 dBm
+    // M: 2021-06-06 10:18:24.444 D-Star, received RF end of transmission from F4FXL   /ID51 to CQCQCQ  , 38.1 seconds, BER: 0.0%
+    // M: 2021-06-06 11:18:25.362 D-Star, received network end of transmission from F4FXL   /ID51 to CQCQCQ  , 0.5 seconds, 0% packet loss, BER: 0.0%
+    // M: 2021-06-06 13:26:24.916 D-Star, received RF end of transmission from DL3CM   /9700 to /DM0HMBA, 0.7 seconds, BER: 0.1%
+    private function parseDStarEOT($logLine, $heardItem)
+    {
+        $regex = '/M: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).\d{3} D-Star, received (RF|network) end of transmission from ([A-Z\d ]{8}\/[A-Z\d ]{4}) to (\/{0,1}[A-Z\d ]{7,8}), (\d{1,5}.\d) seconds, (([0-9]{1,5}%) packet loss, ){0,1}BER: ([0-9]{1,5}.[0-9])%(, RSSI: (-\d{0,3})\/(-\d{0,3})\/(-\d{0,3}) dBm){0,1}/m';
+
+        preg_match($regex, $logLine, $matches, PREG_OFFSET_CAPTURE, 0);
+
+        if (count($matches)) {
+            $isRF = $matches[2][0] == "RF";
+            if (!isset($heardItem->_time)) {
+                $heardItem->_time = $this->makeDateLocal($matches[1][0]);
+            }
+            $heardItem->_duration = $matches[5][0] . "s";
             $heardItem->_mode = "D-Star";
             $heardItem->_callsign = $matches[3][0];
             $heardItem->_target = $matches[4][0];
             $heardItem->_source = $isRF? "RF" : "Net";
-            $heardItem->_berorloss = $isRF? $matches[8][0] : $matches[7][0];
+            $heardItem->_berorloss = $isRF? $matches[8][0] . "%" : $matches[7][0];
             
-            return $heardItem;
+            return true;
         }
 
-        return null;
+        return false;
+    }
+
+    private function makeDateLocal($dateTimeString)
+    {
+        $utc_tz =  new DateTimeZone('UTC');
+        $local_tz = new DateTimeZone(date_default_timezone_get());
+        $timestamp = new DateTime($dateTimeString, $utc_tz);
+        $timestamp->setTimeZone($local_tz);
+        return $timestamp->format('d/m/Y H:i:s');
     }
 
     // 00000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122
@@ -97,25 +175,37 @@ class MMDVMLog
 
     private function isValidLine($logLine)
     {
+        if (trim($logLine) == "") {
+            return false;
+        }
         if (strpos($logLine, "BS_Dwn_Act")) {
             return false;
-        } elseif (strpos($logLine, "invalid access")) {
+        }
+        if (strpos($logLine, "invalid access")) {
             return false;
-        } elseif (strpos($logLine, "received RF header for wrong repeater")) {
+        }
+        if (strpos($logLine, "received RF header for wrong repeater")) {
             return false;
-        } elseif (strpos($logLine, "unable to decode the network CSBK")) {
+        }
+        if (strpos($logLine, "unable to decode the network CSBK")) {
             return false;
-        } elseif (strpos($logLine, "overflow in the DMR slot RF queue")) {
+        }
+        if (strpos($logLine, "overflow in the DMR slot RF queue")) {
             return false;
-        } elseif (strpos($logLine, "non repeater RF header received")) {
+        }
+        if (strpos($logLine, "non repeater RF header received")) {
             return false;
-        } elseif (strpos($logLine, "Embedded Talker Alias")) {
+        }
+        if (strpos($logLine, "Embedded Talker Alias")) {
             return false;
-        } elseif (strpos($logLine, "DMR Talker Alias")) {
+        }
+        if (strpos($logLine, "DMR Talker Alias")) {
             return false;
-        } elseif (strpos($logLine, "CSBK Preamble")) {
+        }
+        if (strpos($logLine, "CSBK Preamble")) {
             return false;
-        } elseif (strpos($logLine, "Preamble CSBK")) {
+        }
+        if (strpos($logLine, "Preamble CSBK")) {
             return false;
         }
         return true;

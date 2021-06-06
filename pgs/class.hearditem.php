@@ -8,5 +8,13 @@ class HeardItem
     public $_target;
     public $_source;
     public $_berorloss;
+    public $_timedout;
+    public $_istxing;
+
+    public function __construct()
+    {
+        $this->_timedout = false;
+        $this->_istxing = false;
+    }
 }
 ?>

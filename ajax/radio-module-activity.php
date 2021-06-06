@@ -4,7 +4,7 @@
     require_once("../pgs/class.mmdvmlog.php");
     require_once("../config.php");
 
-    header("Content-Type: application/json");
+    // header("Content-Type: application/json");
 
     $heardList = array();
     $moduleId = $_GET["id"];
