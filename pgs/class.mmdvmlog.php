@@ -39,7 +39,6 @@ class MMDVMLog
             } elseif (strpos($logLine, "end of")) {
                 if (strpos($logLine, "D-Star")) {
                     $parseOk = $this->parseDStarEOT($logLine, $tempItem);
-                    $heardItem = $tempItem;
                 }
             } elseif (strpos($logLine, "watchdog has expired")) {
                 if (strpos($logLine, "D-Star")) {
@@ -106,7 +105,7 @@ class MMDVMLog
             $heardItem->_mode = "D-Star";
             $heardItem->_callsign = $matches[3][0];
             $heardItem->_target = $matches[4][0];
-            if (!$heardItem->_timedout) {
+            if (!$heardItem->_timedout  && !isset($heardItem->_duration)) {
                 $heardItem->_duration = "TXing";
             }
 
@@ -131,6 +130,7 @@ class MMDVMLog
             if (!isset($heardItem->_time)) {
                 $heardItem->_time = $this->makeDateLocal($matches[1][0]);
             }
+
             $heardItem->_duration = $matches[5][0] . "s";
             $heardItem->_mode = "D-Star";
             $heardItem->_callsign = $matches[3][0];
