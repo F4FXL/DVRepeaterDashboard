@@ -10,14 +10,14 @@
             $radioModuleConf->init();
     ?>
         <div class="table-responsive col-md">
-            <table class="table table-hover table-sm table-responsive-md" id="<?php echo $tableid ?>"
+            <table class="table table-hover table-sm table-responsive-md table-striped" id="<?php echo $tableid ?>"
                     data-url="/ajax/radio-module-activity.php?id=<?php echo $i;?>"
                     data-toggle="table"
                     data-show-refresh="false"
                     data-show-auto-refresh="false"
-                    data-auto-refresh-interval="1"
+                    data-auto-refresh-interval="2"
                     data-auto-refresh="true">
-                <thead class="thead-light">
+                <thead class="thead-dark">
                     <tr>
                         <th colspan="6" scope="col"><?php echo $radioModuleConf->getCallsign(); ?></th>
                     </tr>
