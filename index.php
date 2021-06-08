@@ -12,7 +12,7 @@
     </head>
     <body>
         <div class="container-fluid" id="dashboard-content">
-            <?php include_once("pgs/radio-modules-info.php");?>
+            <?php include_once("pgs/radio-modules-activity.php");?>
         </div>
         <script
 			  src="https://code.jquery.com/jquery-3.6.0.min.js"
