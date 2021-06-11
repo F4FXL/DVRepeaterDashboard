@@ -25,7 +25,7 @@
 
         <script>
             /* Remove table-bordered for all tables. it is being added by bootstraptable.
-            We are grown up adults and have knowledge on how to handle classes ourselves */
+            We are grown up adults and have knowledge on how to handle css classes ourselves */
             var $table = $('table');
 
             $(function()
