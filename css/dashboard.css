@@ -8,3 +8,10 @@ table {
 th {
     font-weight: bolder;
 }
+
+tr.rowTXing
+{
+  background-color:#aa0000 !important;
+  /*font-weight: bold;*/
+  color: white;
+}

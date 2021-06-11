@@ -14,7 +14,7 @@ class HeardItem
     public function __construct()
     {
         $this->_timedout = false;
-        $this->_istxing = false;
+        $this->_istxing = true;
     }
 }
 ?>

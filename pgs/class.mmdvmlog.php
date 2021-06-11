@@ -82,6 +82,7 @@ class MMDVMLog
             $heardItem->_source = $isRF? "RF" : "Net";
             $heardItem->_berorloss = ($isRF? $matches[5][0] : $matches[4][0]) . "%";
             $heardItem->_timedout = true;
+            $heardItem->_istxing = false;
 
             return true;
         }
@@ -105,9 +106,10 @@ class MMDVMLog
             $heardItem->_mode = "D-Star";
             $heardItem->_callsign = $matches[3][0];
             $heardItem->_target = $matches[4][0];
-            if (!$heardItem->_timedout  && !isset($heardItem->_duration)) {
-                $heardItem->_duration = "TXing";
+            if ($heardItem->_istxing) {
+                $heardItem->_duration = $this->getTXDuration($matches[1][0]);
             }
+
 
             return true;
         }
@@ -137,11 +139,21 @@ class MMDVMLog
             $heardItem->_target = $matches[4][0];
             $heardItem->_source = $isRF? "RF" : "Net";
             $heardItem->_berorloss = $isRF? $matches[8][0] . "%" : $matches[7][0];
+            $heardItem->_istxing = false;
             
             return true;
         }
 
         return false;
+    }
+
+    private function getTXDuration($txtStartDateUTCString)
+    {
+        $utc_tz =  new DateTimeZone('UTC');
+        $timestamp = new DateTime($txtStartDateUTCString, $utc_tz);
+        $now = new DateTime("now", $utc_tz);
+        $diff = $now->diff($timestamp, true);
+        return round($diff->s + $diff->f, 1) . "s";
     }
 
     private function makeDateLocal($dateTimeString)
