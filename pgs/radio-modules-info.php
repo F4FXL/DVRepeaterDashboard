@@ -7,7 +7,7 @@
             $tableid = "radio-module-activity-" . ++$i;
             $radioModuleConf = new RadioModule($radioModule["mmdvm.ini"]);
             $radioModuleConf->init(); ?>
-        <div class="table-responsive col-md">
+        <div class="table-responsive col-md" id="lastHeard">
             <table class="table table-hover table-sm table-responsive-md table-striped" id="<?php echo $tableid ?>"
                     data-url="/ajax/radio-module-activity.php?id=<?php echo $i; ?>"
                     data-toggle="table"
@@ -15,7 +15,7 @@
                     data-show-auto-refresh="false"
                     data-auto-refresh-interval="2"
                     data-auto-refresh="true"
-                    data-row-style="rowStyle">
+                    data-row-style="lastHeardRowStyle">
                 <thead class="thead-dark">
                     <tr>
                         <th colspan="6" scope="col"><?php echo $radioModuleConf->getCallsign(); ?></th>
@@ -37,11 +37,10 @@
         }
     ?>
     <script>
-    function rowStyle(row, index)
+    function lastHeardRowStyle(row, index)
     {
         if(row._istxing)
             return {classes: 'rowTXing'}
-            //return {css:{color: 'red'}}
 
         return {css:{ }};
     }
