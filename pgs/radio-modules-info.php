@@ -25,7 +25,7 @@
                 <tr>
                     <th scope="col" data-field="_time">Time</th>
                     <th scope="col" data-field="_protocol">Protocol</th>
-                    <th scope="col" data-field="_peer">Peer</th>
+                    <th scope="col" data-field="_peer" data-formatter="callsignFormatter">Peer</th>
                     <th scope="col" data-field="_dir">Direction</th>
                 </tr>
             </thead>
@@ -46,8 +46,8 @@
                     <th scope="col" data-field="_time">Time</th>
                     <th scopt="col" data-field="_duration">Duration</th>
                     <!-- TODO Hide this column if only one mode is active <th scope="col" data-field="_mode">Mode</th> -->
-                    <th scope="col" data-field="_callsign">Call</th>
-                    <th scope="col" data-field="_target">Target</th>
+                    <th scope="col" data-field="_callsign" data-formatter="callsignFormatter">Call</th>
+                    <th scope="col" data-field="_target"   data-formatter="callsignFormatter">Target</th>
                     <th scope="col" data-field="_source">Source</th>
                     <th scope="col" data-field="_berorloss">BER/Loss</th>
                 </tr>
@@ -67,6 +67,14 @@
         return {
             css: {}
         };
+    }
+
+    function callsignFormatter(value, row, index, field) {
+        if (value != null) {
+            return value.replaceAll(" ", "&nbsp;");
+        }
+
+        return "";
     }
     </script>
 </div>
