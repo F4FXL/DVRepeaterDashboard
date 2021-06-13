@@ -15,12 +15,12 @@ class RadioModule
         return $this->_conf->init();
     }
 
-    public function getCallsign()
+    public function getCallsign($long = false)
     {
         $callsign = $this->_conf->getConfigItem("General", "Callsign");
         $module = $this->_conf->getConfigItem("D-Star", "Module");
 
-        return $callsign . "-" . $module;
+        return $long? (str_pad($callsign, 7, " ") . $module) : ($callsign . "-" . $module);
     }
 
     public function getLogFileName()

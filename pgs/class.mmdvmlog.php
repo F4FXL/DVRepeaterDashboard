@@ -1,5 +1,6 @@
 <?php
 require_once("class.hearditem.php");
+require_once("class.dateutils.php");
 
 class MMDVMLog
 {
@@ -75,7 +76,7 @@ class MMDVMLog
         if (count($matches)) {
             $isRF = $matches[2][0] == "RF";
             if (!isset($heardItem->_time)) {
-                $heardItem->_time = $this->makeDateLocal($matches[1][0]);
+                $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
             }
             $heardItem->_duration = $matches[3][0] . "s (TO)";
             $heardItem->_mode = "D-Star";
@@ -101,7 +102,7 @@ class MMDVMLog
 
         if (count($matches)) {
             $isRF = $matches[2][0] == "RF";
-            $heardItem->_time = $this->makeDateLocal($matches[1][0]);
+            $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
             $heardItem->_source = $isRF? "RF" : "Net";
             $heardItem->_mode = "D-Star";
             $heardItem->_callsign = $matches[3][0];
@@ -130,7 +131,7 @@ class MMDVMLog
         if (count($matches)) {
             $isRF = $matches[2][0] == "RF";
             if (!isset($heardItem->_time)) {
-                $heardItem->_time = $this->makeDateLocal($matches[1][0]);
+                $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
             }
 
             $heardItem->_duration = $matches[5][0] . "s";
@@ -154,15 +155,6 @@ class MMDVMLog
         $now = new DateTime("now", $utc_tz);
         $diff = $now->diff($timestamp, true);
         return round($diff->s + $diff->f, 1) . "s";
-    }
-
-    private function makeDateLocal($dateTimeString)
-    {
-        $utc_tz =  new DateTimeZone('UTC');
-        $local_tz = new DateTimeZone(date_default_timezone_get());
-        $timestamp = new DateTime($dateTimeString, $utc_tz);
-        $timestamp->setTimeZone($local_tz);
-        return $timestamp->format('d/m/Y H:i:s');
     }
 
     // 00000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122
