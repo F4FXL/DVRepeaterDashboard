@@ -81,7 +81,7 @@ class MMDVMLog
             $heardItem->_duration = $matches[3][0] . "s (TO)";
             $heardItem->_mode = "D-Star";
             $heardItem->_source = $isRF? "RF" : "Net";
-            $heardItem->_berorloss = ($isRF? $matches[5][0] : $matches[4][0]) . "%";
+            $heardItem->_berorloss = ($isRF? $matches[5][0] : $matches[4][0]);
             $heardItem->_timedout = true;
             $heardItem->_istxing = false;
 
@@ -124,7 +124,7 @@ class MMDVMLog
     // M: 2021-06-06 13:26:24.916 D-Star, received RF end of transmission from DL3CM   /9700 to /DM0HMBA, 0.7 seconds, BER: 0.1%
     private function parseDStarEOT($logLine, $heardItem)
     {
-        $regex = '/M: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).\d{3} D-Star, received (RF|network) end of transmission from ([A-Z\d ]{8}\/[A-Z\d ]{4}) to (\/{0,1}[A-Z\d ]{7,8}), (\d{1,5}.\d) seconds, (([0-9]{1,5}%) packet loss, ){0,1}BER: ([0-9]{1,5}.[0-9])%(, RSSI: (-\d{0,3})\/(-\d{0,3})\/(-\d{0,3}) dBm){0,1}/m';
+        $regex = '/M: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).\d{3} D-Star, received (RF|network) end of transmission from ([A-Z\d ]{8}\/[A-Z\d ]{4}) to (\/{0,1}[A-Z\d ]{7,8}), (\d{1,5}.\d) seconds, (([0-9]{1,5})% packet loss, ){0,1}BER: ([0-9]{1,5}.[0-9])%(, RSSI: (-\d{0,3})\/(-\d{0,3})\/(-\d{0,3}) dBm){0,1}/m';
 
         preg_match($regex, $logLine, $matches, PREG_OFFSET_CAPTURE, 0);
 
@@ -139,7 +139,7 @@ class MMDVMLog
             $heardItem->_callsign = $matches[3][0];
             $heardItem->_target = $matches[4][0];
             $heardItem->_source = $isRF? "RF" : "Net";
-            $heardItem->_berorloss = $isRF? $matches[8][0] . "%" : $matches[7][0];
+            $heardItem->_berorloss = $isRF? $matches[8][0] : $matches[7][0];
             $heardItem->_istxing = false;
             
             return true;

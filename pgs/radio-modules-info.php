@@ -49,7 +49,7 @@
                     <th scope="col" data-field="_callsign" data-formatter="callsignFormatter">Call</th>
                     <th scope="col" data-field="_target"   data-formatter="callsignFormatter">Target</th>
                     <th scope="col" data-field="_source">Source</th>
-                    <th scope="col" data-field="_berorloss">BER/Loss</th>
+                    <th scope="col" data-field="_berorloss" data-formatter="percentFormatter">BER/Loss</th>
                 </tr>
             </thead>
         </table>
@@ -75,6 +75,14 @@
         }
 
         return "";
+    }
+
+    function percentFormatter(value, row, index, field) {
+        if (value != null) {
+            return value + "%";
+        }
+
+        return "-";
     }
     </script>
 </div>
