@@ -78,7 +78,7 @@ class MMDVMLog
             if (!isset($heardItem->_time)) {
                 $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
             }
-            $heardItem->_duration = $matches[3][0] . "s (TO)";
+            $heardItem->_duration = $matches[3][0];
             $heardItem->_mode = "D-Star";
             $heardItem->_source = $isRF? "RF" : "Net";
             $heardItem->_berorloss = ($isRF? $matches[5][0] : $matches[4][0]);
@@ -134,7 +134,7 @@ class MMDVMLog
                 $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
             }
 
-            $heardItem->_duration = $matches[5][0] . "s";
+            $heardItem->_duration = $matches[5][0];
             $heardItem->_mode = "D-Star";
             $heardItem->_callsign = $matches[3][0];
             $heardItem->_target = $matches[4][0];
@@ -154,7 +154,7 @@ class MMDVMLog
         $timestamp = new DateTime($txtStartDateUTCString, $utc_tz);
         $now = new DateTime("now", $utc_tz);
         $diff = $now->diff($timestamp, true);
-        return round($diff->s + $diff->f, 1) . "s";
+        return round($diff->s + $diff->f, 1);
     }
 
     // 00000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122

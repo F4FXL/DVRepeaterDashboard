@@ -44,7 +44,7 @@
                 </tr>
                 <tr>
                     <th scope="col" data-field="_time">Time</th>
-                    <th scopt="col" data-field="_duration">Duration</th>
+                    <th scopt="col" data-field="_duration"  data-formatter="durationFormatter">Duration</th>
                     <!-- TODO Hide this column if only one mode is active <th scope="col" data-field="_mode">Mode</th> -->
                     <th scope="col" data-field="_callsign" data-formatter="callsignFormatter">Call</th>
                     <th scope="col" data-field="_target"   data-formatter="callsignFormatter">Target</th>
@@ -83,6 +83,14 @@
         }
 
         return "-";
+    }
+
+    function durationFormatter(value, row, index, field) {
+        if(value != null) {
+            return value + "s"+ (row._timedout?" (Time Out)" : "");
+        }
+
+        return "&nbsp;"
     }
     </script>
 </div>
