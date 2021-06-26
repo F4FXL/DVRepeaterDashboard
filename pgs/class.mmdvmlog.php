@@ -154,7 +154,7 @@ class MMDVMLog
         $timestamp = new DateTime($txtStartDateUTCString, $utc_tz);
         $now = new DateTime("now", $utc_tz);
         $diff = $now->diff($timestamp, true);
-        return round($diff->s + $diff->f, 1);
+        return round($diff->h * 3600.0 + $diff->i * 60.0 + $diff->s + $diff->f, 1);
     }
 
     // 00000000001111111111222222222233333333334444444444555555555566666666667777777777888888888899999999990000000000111111111122
