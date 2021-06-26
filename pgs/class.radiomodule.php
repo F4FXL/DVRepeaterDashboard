@@ -23,9 +23,9 @@ class RadioModule
         return $long? (str_pad($callsign, 7, " ") . $module) : ($callsign . "-" . $module);
     }
 
-    public function getLogFileName()
+    public function getLogFileName($wildcard = false)
     {
-        return $this->_conf->getConfigItem("Log", "FileRoot") . "-" . gmdate("Y-m-d") . ".log";
+        return $this->_conf->getConfigItem("Log", "FileRoot") . ($wildcard ? "*.log" : "-" . gmdate("Y-m-d") . ".log");
     }
 }
 ?>
