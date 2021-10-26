@@ -14,7 +14,7 @@ class MMDVMLog
     {
         // Open Logfile and copy loglines into LogLines-Array()
         $logLines = explode("\n", `egrep -h "from|end|watchdog|lost|Alias|0000" $this->_logFilePath | grep -v "data header | tail -50"`);
-        return array_reverse($logLines);
+        return $logLines;
     }
 
     public function getHeardList()
@@ -22,7 +22,7 @@ class MMDVMLog
         $logLines = $this->getShortMMDVMLog();
         $heardList = array();
         $endOfTransmitReceivedList = array();
-        $heardItem = null;
+        $heardItem =  new HeardItem();
         $tempItem = new HeardItem();
 
         foreach ($logLines as $logLine) {
@@ -34,36 +34,31 @@ class MMDVMLog
 
             if (strpos($logLine, "RF header") || strpos($logLine, "network header")) {
                 if (strpos($logLine, "D-Star")) {
-                    $parseOk = $this->parseDStarSOT($logLine, $tempItem);
-                    if (array_key_exists($tempItem->_callsign, $endOfTransmitReceivedList)) {
-                        $heardItem = $endOfTransmitReceivedList[$tempItem->_callsign];
-                    }
-                    else {
-                        $heardItem = $tempItem;
-                    }
+                    $parseOk = $this->parseDStarSOT($logLine, $heardItem);
                 }
             } elseif (strpos($logLine, "end of")) {
                 if (strpos($logLine, "D-Star")) {
-                    $parseOk = $this->parseDStarEOT($logLine, $tempItem);
-                    $endOfTransmitReceivedList[$tempItem->_callsign] = $tempItem;
+                    $parseOk = $this->parseDStarEOT($logLine, $heardItem);
                 }
             } elseif (strpos($logLine, "watchdog has expired")) {
                 if (strpos($logLine, "D-Star")) {
-                    $parseOk = $this->parseDStarTO($logLine, $tempItem);
-                    $endOfTransmitReceivedList[$tempItem->_callsign] = $tempItem;
+                    $parseOk = $this->parseDStarTO($logLine, $heardItem);
                 }
             }
 
-            if ($parseOk && isset($heardItem)) {
-                if (!array_key_exists($heardItem->_callsign, $heardList)) { //only push the last transmission of specified callsign
-                    $heardList[$heardItem->_callsign] = $heardItem;
+            if ($parseOk) {
+                if(!$heardItem->_istxing && array_key_exists($heardItem->_callsign, $heardList)) { //keep time of start of transmission
+                    $heardItem->_time = $heardList[$heardItem->_callsign]->_time;
+                    $heardItem->_sortabletime = $heardList[$heardItem->_callsign]->_sortabletime;
                 }
-                $heardItem = null;
-                $tempItem =  new HeardItem();
+                $heardList[$heardItem->_callsign] = $heardItem;
+                $heardItem = new HeardItem();
             }
         }
 
-        return array_values($heardList);
+        $heardList = array_values($heardList);
+        usort($heardList, function($a, $b) { return strcmp($b->_sortabletime, $a->_sortabletime);});
+        return $heardList;
     }
 
     // M: 2021-06-06 09:24:48.507 D-Star, network watchdog has expired, 18.8 seconds, 10% packet loss, BER: 0.0%
@@ -81,9 +76,8 @@ class MMDVMLog
 
         if (count($matches)) {
             $isRF = $matches[2][0] == "RF";
-            if (!isset($heardItem->_time)) {
-                $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
-            }
+            $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
+            $heardItem->_sortabletime = DateUtils::makeDateLocal($matches[1][0]);
             $heardItem->_duration = $matches[3][0];
             $heardItem->_mode = "D-Star";
             $heardItem->_source = $isRF? "RF" : "Net";
@@ -109,6 +103,7 @@ class MMDVMLog
         if (count($matches)) {
             $isRF = $matches[2][0] == "RF";
             $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
+            $heardItem->_sortabletime = DateUtils::makeDateLocal($matches[1][0]);
             $heardItem->_source = $isRF? "RF" : "Net";
             $heardItem->_mode = "D-Star";
             $heardItem->_callsign = $matches[3][0];
@@ -135,10 +130,8 @@ class MMDVMLog
 
         if (count($matches)) {
             $isRF = $matches[2][0] == "RF";
-            if (!isset($heardItem->_time)) {
-                $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
-            }
-
+            $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
+            $heardItem->_sortabletime = DateUtils::makeDateLocal($matches[1][0]);
             $heardItem->_duration = $matches[5][0];
             $heardItem->_mode = "D-Star";
             $heardItem->_callsign = $matches[3][0];
