@@ -111,7 +111,6 @@ class MMDVMLog
                 $heardItem->_duration = $this->getTXDuration($matches[1][0]);
             }
 
-
             return true;
         }
 
