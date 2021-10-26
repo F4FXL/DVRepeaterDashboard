@@ -21,7 +21,6 @@ class MMDVMLog
     {
         $logLines = $this->getShortMMDVMLog();
         $heardList = array();
-        $heardCalls = array();
         $heardItem = null;
         $tempItem = new HeardItem();
 
@@ -48,16 +47,15 @@ class MMDVMLog
             }
 
             if ($parseOk && isset($heardItem)) {
-                if (!in_array($heardItem->_callsign, $heardCalls, true)) { //only push the last transmission of specified callsign
-                    $heardCalls[] = $heardItem->_callsign;
-                    $heardList[] = $heardItem;
+                if (!array_key_exists($heardItem->_callsign, $heardCalls)) { //only push the last transmission of specified callsign
+                    $heardList[$heardItem->_callsign] = $heardItem;
                 }
                 $heardItem = null;
                 $tempItem = new HeardItem();
             }
         }
 
-        return $heardList;
+        return array_values($heardList);
     }
 
     // M: 2021-06-06 09:24:48.507 D-Star, network watchdog has expired, 18.8 seconds, 10% packet loss, BER: 0.0%
