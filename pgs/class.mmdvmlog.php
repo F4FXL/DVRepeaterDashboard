@@ -21,6 +21,7 @@ class MMDVMLog
     {
         $logLines = $this->getShortMMDVMLog();
         $heardList = array();
+        $endOfTransmitReceivedList = array();
         $heardItem = null;
         $tempItem = new HeardItem();
 
@@ -34,24 +35,31 @@ class MMDVMLog
             if (strpos($logLine, "RF header") || strpos($logLine, "network header")) {
                 if (strpos($logLine, "D-Star")) {
                     $parseOk = $this->parseDStarSOT($logLine, $tempItem);
-                    $heardItem = $tempItem;
+                    if (array_key_exists($tempItem->_callsign, $endOfTransmitReceivedList)) {
+                        $heardItem = $endOfTransmitReceivedList[$tempItem->_callsign];
+                    }
+                    else {
+                        $heardItem = $tempItem;
+                    }
                 }
             } elseif (strpos($logLine, "end of")) {
                 if (strpos($logLine, "D-Star")) {
                     $parseOk = $this->parseDStarEOT($logLine, $tempItem);
+                    $endOfTransmitReceivedList[$tempItem->_callsign] = $tempItem;
                 }
             } elseif (strpos($logLine, "watchdog has expired")) {
                 if (strpos($logLine, "D-Star")) {
                     $parseOk = $this->parseDStarTO($logLine, $tempItem);
+                    $endOfTransmitReceivedList[$tempItem->_callsign] = $tempItem;
                 }
             }
 
             if ($parseOk && isset($heardItem)) {
-                if (!array_key_exists($heardItem->_callsign, $heardCalls)) { //only push the last transmission of specified callsign
+                if (!array_key_exists($heardItem->_callsign, $heardList)) { //only push the last transmission of specified callsign
                     $heardList[$heardItem->_callsign] = $heardItem;
                 }
                 $heardItem = null;
-                $tempItem = new HeardItem();
+                $tempItem =  new HeardItem();
             }
         }
 
