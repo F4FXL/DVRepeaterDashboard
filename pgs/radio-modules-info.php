@@ -87,7 +87,13 @@
 
     function durationFormatter(value, row, index, field) {
         if(value != null) {
-            return value + "s"+ (row._timedout?" (Time Out)" : "");
+            if(row._timedout)
+                return value + "s (Time Out)";
+
+            if(row._transmissionLost)
+                return value + "s (Trans Lost)";
+
+            return value + "s";
         }
 
         return "&nbsp;"

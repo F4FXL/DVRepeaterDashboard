@@ -161,13 +161,14 @@ class MMDVMLog
             $isRF = true; // transmission lost is always RF
             $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
             $heardItem->_sortabletime = DateUtils::makeDateLocal($matches[1][0]);
-            $heardItem->_duration = $matches[5][0];
+            $heardItem->_duration = $matches[7][0];
             $heardItem->_mode = "D-Star";
-            $heardItem->_callsign = $matches[3][0];
-            $heardItem->_target = $matches[4][0];
+            $heardItem->_callsign = $matches[2][0];
+            $heardItem->_target = $matches[3][0];
             $heardItem->_source = $isRF? "RF" : "Net";
-            $heardItem->_berorloss = $isRF? $matches[8][0] : $matches[7][0];
+            $heardItem->_berorloss = $matches[7][0];
             $heardItem->_istxing = false;
+            $heardItem->_transmissionLost = true;
             
             return true;
         }
