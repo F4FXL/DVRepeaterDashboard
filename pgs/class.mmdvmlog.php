@@ -44,6 +44,10 @@ class MMDVMLog
                 if (strpos($logLine, "D-Star")) {
                     $parseOk = $this->parseDStarTO($logLine, $heardItem);
                 }
+            } elseif (strpos($logLine, "watchdog has expired")) {
+                if (strpos($logLine, "D-Star")) {
+                    $parseOk = $this->parseDStarLOT($logLine, $heardItem);
+                }
             }
 
             if ($parseOk) {
@@ -130,6 +134,31 @@ class MMDVMLog
 
         if (count($matches)) {
             $isRF = $matches[2][0] == "RF";
+            $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
+            $heardItem->_sortabletime = DateUtils::makeDateLocal($matches[1][0]);
+            $heardItem->_duration = $matches[5][0];
+            $heardItem->_mode = "D-Star";
+            $heardItem->_callsign = $matches[3][0];
+            $heardItem->_target = $matches[4][0];
+            $heardItem->_source = $isRF? "RF" : "Net";
+            $heardItem->_berorloss = $isRF? $matches[8][0] : $matches[7][0];
+            $heardItem->_istxing = false;
+            
+            return true;
+        }
+
+        return false;
+    }
+    
+    // MMDVM-2022-10-07.log:M: 2022-10-07 13:23:18.869 D-Star, transmission lost from F8DSN   /5100 to        I, 3.9 seconds, BER: 14.6%
+    private function parseDStarLOT($logLine, $heardItem)
+    {
+        $regex = '/M: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).\d{3} D-Star, transmission lost from ([A-Z\d ]{8}\/[A-Z\d ]{4}) to (\/{0,1}[A-Z\d ]{7,8}), (\d{1,5}.\d) seconds, (([0-9]{1,5})% packet loss, ){0,1}BER: ([0-9]{1,5}.[0-9])%(, RSSI: (-\d{0,3})\/(-\d{0,3})\/(-\d{0,3}) dBm){0,1}/m';
+
+        preg_match($regex, $logLine, $matches, PREG_OFFSET_CAPTURE, 0);
+
+        if (count($matches)) {
+            $isRF = true; // transmission lost is always RF
             $heardItem->_time = DateUtils::makeDateLocal($matches[1][0]);
             $heardItem->_sortabletime = DateUtils::makeDateLocal($matches[1][0]);
             $heardItem->_duration = $matches[5][0];
