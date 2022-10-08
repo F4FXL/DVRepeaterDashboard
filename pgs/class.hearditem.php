@@ -10,14 +10,14 @@ class HeardItem
     public $_source;
     public $_berorloss;
     public $_timedout;
-    public $_transmissionLost;
+    public $_transmissionlost;
     public $_istxing;
 
     public function __construct()
     {
         $this->_timedout = false;
         $this->_istxing = true;
-        $this->_transmissionLost = false;
+        $this->_transmissionlost = false;
     }
 }
 ?>

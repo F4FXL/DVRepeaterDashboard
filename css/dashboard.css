@@ -12,6 +12,11 @@ th {
 tr.rowTXing
 {
   background-color:#aa0000 !important;
-  /*font-weight: bold;*/
+  font-style: italic !important;
   color: white;
+}
+
+tr.rowWarning
+{
+  background-color:#e9d525 !important;
 }

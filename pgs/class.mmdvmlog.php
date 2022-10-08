@@ -170,7 +170,7 @@ class MMDVMLog
             $heardItem->_source = $isRF? "RF" : "Net";
             $heardItem->_berorloss = $matches[7][0];
             $heardItem->_istxing = false;
-            $heardItem->_transmissionLost = true;
+            $heardItem->_transmissionlost = true;
             
             return true;
         }

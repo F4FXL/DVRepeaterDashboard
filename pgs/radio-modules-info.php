@@ -37,7 +37,7 @@
             data-show-auto-refresh="false"
             data-auto-refresh-interval="2"
             data-auto-refresh="true"
-            data-row-style="lastHeardRowStyle">
+            data-row-style="rowStyle">
             <thead class="thead-dark">
                 <tr>
                     <th colspan="6" scope="col">Last Heard</th>
@@ -58,10 +58,15 @@
         }
     ?>
     <script>
-    function lastHeardRowStyle(row, index) {
+    function rowStyle(row, index) {
         if (row._istxing)
             return {
                 classes: 'rowTXing'
+            }
+
+        if (row._timedout || row._transmissionlost)
+            return {
+                classes: 'rowWarning'
             }
 
         return {
@@ -87,11 +92,14 @@
 
     function durationFormatter(value, row, index, field) {
         if(value != null) {
-            if(row._timedout)
+            if (row._timedout)
                 return value + "s (Time Out)";
 
-            if(row._transmissionLost)
-                return value + "s (Trans Lost)";
+            if (row._transmissionlost)
+                return value + "s (Transmission Lost)";
+
+            if (row._istxing)
+                return value + "s (Transmitting)";
 
             return value + "s";
         }
