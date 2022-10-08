@@ -13,7 +13,7 @@
     if (isset($moduleId) && array_key_exists($moduleId, $RadioModules)) {
         $radioModule = new RadioModule($RadioModules[$moduleId]["mmdvm.ini"]);
         $radioModule->init();
-        $logPath = $RadioModules[$moduleId]["logpath"] . "/" . $radioModule->getLogFileName(true);
+        $logPath = $RadioModules[$moduleId]["logpath"] . "/" . $radioModule->getLogFileName(false);
         $logFile = new MMDVMLog($logPath);
         $heardList = $logFile->getHeardList();
     }
