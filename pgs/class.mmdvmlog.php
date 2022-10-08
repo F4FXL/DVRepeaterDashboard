@@ -91,8 +91,6 @@ class MMDVMLog
             $heardItem->_timedout = true;
             $heardItem->_istxing = false;
 
-            $heardItem->_target = "AZERTY";
-
             return true;
         }
 
