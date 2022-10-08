@@ -26,7 +26,7 @@ class MMDVMLog
         $tempItem = new HeardItem();
 
         foreach ($logLines as $logLine) {
-            if (!$this->isValidLine($logLine)) {
+            if (!$this->isValidLine($logLine) /*|| !strpos($logLine, "15:59")*/) {
                 continue;
             }
 
@@ -42,6 +42,8 @@ class MMDVMLog
                 }
             } elseif (strpos($logLine, "watchdog has expired")) {
                 if (strpos($logLine, "D-Star")) {
+                    // watvchdog messages do not contain any callsign, so assume it is the last inserted item who timed out
+                    $heardItem = $heardList[array_key_last($heardList)];
                     $parseOk = $this->parseDStarTO($logLine, $heardItem);
                 }
             } elseif (strpos($logLine, "transmission lost")) {
@@ -88,6 +90,8 @@ class MMDVMLog
             $heardItem->_berorloss = ($isRF? $matches[5][0] : $matches[4][0]);
             $heardItem->_timedout = true;
             $heardItem->_istxing = false;
+
+            $heardItem->_target = "AZERTY";
 
             return true;
         }
