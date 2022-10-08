@@ -13,7 +13,7 @@ class MMDVMLog
     private function getShortMMDVMLog()
     {
         // Open Logfile and copy loglines into LogLines-Array()
-        $logLines = explode("\n", `egrep -h "from|end|watchdog|lost|Alias|0000" $this->_logFilePath | grep -v "data header | tail -50"`);
+        $logLines = explode("\n", `egrep -h "from|end|watchdog|lost|Alias|0000" $this->_logFilePath | grep -v "data header | tail -30"`);
         return $logLines;
     }
 
