@@ -26,7 +26,7 @@ class MMDVMLog
         $tempItem = new HeardItem();
 
         foreach ($logLines as $logLine) {
-            if (!$this->isValidLine($logLine) /*|| !strpos($logLine, "15:59")*/) {
+            if (!$this->isValidLine($logLine)/* || !strpos($logLine, "12:")*/) {
                 continue;
             }
 
@@ -42,7 +42,7 @@ class MMDVMLog
                 }
             } elseif (strpos($logLine, "watchdog has expired")) {
                 if (strpos($logLine, "D-Star")) {
-                    // watvchdog messages do not contain any callsign, so assume it is the last inserted item who timed out
+                    // watchdog messages do not contain any callsign, so assume it is the last inserted item who timed out
                     $heardItem = $heardList[array_key_last($heardList)];
                     $parseOk = $this->parseDStarTO($logLine, $heardItem);
                 }
@@ -57,6 +57,7 @@ class MMDVMLog
                     $heardItem->_time = $heardList[$heardItem->_callsign]->_time;
                     $heardItem->_sortabletime = $heardList[$heardItem->_callsign]->_sortabletime;
                 }
+                unset($heardList[$heardItem->_callsign]);
                 $heardList[$heardItem->_callsign] = $heardItem;
                 $heardItem = new HeardItem();
             }
