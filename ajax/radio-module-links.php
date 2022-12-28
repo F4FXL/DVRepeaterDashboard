@@ -1,6 +1,7 @@
 <?php
     require_once("../pgs/class.linkitem.php");
     require_once("../pgs/class.radiomodule.php");
+    require_once("../pgs/class.dstargateway.php");
     require_once("../pgs/class.linkslog.php");
     require_once("../config.php");
 
@@ -13,8 +14,8 @@
     if (isset($moduleId) && array_key_exists($moduleId, $RadioModules)) {
         $radioModule = new RadioModule($RadioModules[$moduleId]["mmdvm.ini"]);
         $radioModule->init();
-        $linksLog = new LinksLog($DStarGateway["linkslog"]);
 
+        $linksLog = new LinksLog($DStarGateway["linkslog"]);
         $links = $linksLog->getLinks($radioModule->getCallsign(true));
     }
 
