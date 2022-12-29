@@ -89,7 +89,7 @@
         if(value == null)
             return img;
 
-        return "<a href=\"https://aprs.fi/" + value + "\" target=_blank>" + img + "</a></div>";
+        return "<a href=\"https://aprs.fi/" + value + "\" target=_blank>" + img + "</a>";
     }
 
     function percentFormatter(value, row, index, field) {
