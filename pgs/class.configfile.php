@@ -26,7 +26,7 @@ class ConfigFile
         return $success;
     }
 
-    public function getConfigItem($section, $key)
+    public function getConfigItem($section, $key, $defaultvalue =  "")
     {
         // retrieves the corresponding config-entry within a [section]
         $sectionpos = array_search("[" . $section . "]", $this->_conf);
@@ -43,10 +43,17 @@ class ConfigFile
             }
             if ($sectionpos < $len)
             {
-                return substr($this->_conf[$sectionpos], strlen($key) + 1);
+                $config = substr($this->_conf[$sectionpos], strlen($key) + 1);
+                $commentidx = strpos($config, "#");
+                if($commentidx !== false) {
+                    $config = substr($config, 0, $commentidx);
+                }
+                $config = trim($config, " \t\n\r\0\x0B");
+                if($config == "") $config = $defaultvalue;
+                return $config;
             }
         }
-        return null;
+        return $defaultvalue;
      }
 
     //https://stackoverflow.com/questions/834303/startswith-and-endswith-functions-in-php
