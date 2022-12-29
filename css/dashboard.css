@@ -20,3 +20,14 @@ tr.rowWarning
 {
   background-color:#e9d525 !important;
 }
+
+/* Filters generated with https://codepen.io/sosuke/pen/Pjoqqp */
+.filterRed
+{
+ filter: invert(10%) sepia(61%) saturate(6238%) hue-rotate(11deg) brightness(100%) contrast(123%);
+}
+
+.filterGreen
+{
+  filter: invert(32%) sepia(100%) saturate(1194%) hue-rotate(92deg) brightness(96%) contrast(103%);
+}
