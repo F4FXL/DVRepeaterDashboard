@@ -85,11 +85,11 @@
 
     function dprsCallsignFormatter(value, row, index, field) {
 
-        var img = "<img src=\"./img/sat.png\" class=\""+ (value != null ? "filterGreen" : "filterRed") + "\"/>"
+        var img = "<img title=\"" + (value != null ? "DPRS Available" : "No DPRS") + "\" src=\"./img/sat.png\" class=\""+ (value != null ? "filterGreen" : "filterRed") + "\"/>"
         if(value == null)
             return img;
 
-        return "<a href=\"https://aprs.fi/" + row._dprscallsign + "\" target=_blank>" + img + "</a></div>";
+        return "<a href=\"https://aprs.fi/" + value + "\" target=_blank>" + img + "</a></div>";
     }
 
     function percentFormatter(value, row, index, field) {
