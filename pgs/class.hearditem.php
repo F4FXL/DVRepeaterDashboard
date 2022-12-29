@@ -6,6 +6,7 @@ class HeardItem
     public $_duration;
     public $_mode;
     public $_callsign;
+    public $_dprscallsign;
     public $_target;
     public $_source;
     public $_berorloss;

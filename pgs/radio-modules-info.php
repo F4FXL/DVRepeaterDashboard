@@ -47,7 +47,7 @@
                     <th scopt="col" data-field="_duration"  data-formatter="durationFormatter">Duration</th>
                     <!-- TODO Hide this column if only one mode is active <th scope="col" data-field="_mode">Mode</th> -->
                     <th scope="col" data-field="_callsign" data-formatter="callsignFormatter">Call</th>
-                    <th scope="col" data-field="_target"   data-formatter="callsignFormatter">Target</th>
+                    <th scope="col" data-field="_target"   data-formatter="callsignFormatterTarget">Target</th>
                     <th scope="col" data-field="_source">Source</th>
                     <th scope="col" data-field="_berorloss" data-formatter="percentFormatter">BER/Loss</th>
                 </tr>
@@ -74,9 +74,23 @@
         };
     }
 
-    function callsignFormatter(value, row, index, field) {
+    function callsignFormatterTarget(value, row, index, field) {
         if (value != null) {
             return value.replaceAll(" ", "&nbsp;");
+        }
+
+        return "";
+    }
+
+    function callsignFormatter(value, row, index, field) {
+        if (value != null) {
+            value = value.replaceAll(" ", "&nbsp;");
+
+            if(row._dprscallsign != null) {
+                value = "<a href=\"https://aprs.fi/" + row._dprscallsign + "\" target=_blank>" + value + "</a>";
+            }
+
+            return value;
         }
 
         return "";
