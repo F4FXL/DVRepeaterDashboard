@@ -44,7 +44,7 @@
                 </tr>
                 <tr>
                     <th scope="col" data-field="_time">Time</th>
-                    <th scopt="col" data-field="_duration"  data-formatter="durationFormatter">Duration</th>
+                    <th scopt="col" data-field="_duration"  data-formatter="durationFormatter" class="col-md-2">Duration</th>
                     <!-- TODO Hide this column if only one mode is active <th scope="col" data-field="_mode">Mode</th> -->
                     <th scope="col" data-field="_callsign" data-formatter="callsignFormatter" class="col-md-1">Call</th>
                     <th scope="col" data-field="_dprscallsign" data-formatter="dprsCallsignFormatter" class="col-md-1">DPRS</th>
