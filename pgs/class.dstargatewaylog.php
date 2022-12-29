@@ -17,7 +17,7 @@ class DStarGatewayLog
         $cmdline = "bash -c 'cat " . $this->_logFilePath. " | egrep $\"\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\] \[INFO   ] DPRS\"'";
         $output = shell_exec($cmdline);
         $logLines = explode("\n", $output);
-        $regex = "/\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\] \[INFO   ] DPRS\t(([0-9]|[A-Z]|\s){8}\/([0-9]|[A-Z]|\s){4})\t(([0-9]|[A-Z]){1,6}-[0-9]{0,2})\t/m";
+        $regex = "/\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\] \[INFO   ] DPRS\t(([0-9]|[A-Z]|\s){8}\/([0-9]|[A-Z]|\s){0,4})\t(([0-9]|[A-Z]){1,6}-([0-9]|[A-Z]){0,2})/m";
 
         foreach($logLines as $logLine) {
             preg_match($regex, $logLine, $matches, PREG_OFFSET_CAPTURE, 0);
