@@ -40,14 +40,15 @@
             data-row-style="rowStyle">
             <thead class="thead-dark">
                 <tr>
-                    <th colspan="6" scope="col">Last Heard</th>
+                    <th colspan="7" scope="col">Last Heard</th>
                 </tr>
                 <tr>
                     <th scope="col" data-field="_time">Time</th>
                     <th scopt="col" data-field="_duration"  data-formatter="durationFormatter">Duration</th>
                     <!-- TODO Hide this column if only one mode is active <th scope="col" data-field="_mode">Mode</th> -->
-                    <th scope="col" data-field="_callsign" data-formatter="callsignFormatter">Call</th>
-                    <th scope="col" data-field="_target"   data-formatter="callsignFormatterTarget">Target</th>
+                    <th scope="col" data-field="_callsign" data-formatter="callsignFormatter" class="col-md-1">Call</th>
+                    <th scope="col" data-field="_dprscallsign" data-formatter="dprsCallsignFormatter" class="col-md-1">DPRS</th>
+                    <th scope="col" data-field="_target"   data-formatter="callsignFormatter">Target</th>
                     <th scope="col" data-field="_source">Source</th>
                     <th scope="col" data-field="_berorloss" data-formatter="percentFormatter">BER/Loss</th>
                 </tr>
@@ -74,7 +75,7 @@
         };
     }
 
-    function callsignFormatterTarget(value, row, index, field) {
+    function callsignFormatter(value, row, index, field) {
         if (value != null) {
             return value.replaceAll(" ", "&nbsp;");
         }
@@ -82,18 +83,11 @@
         return "";
     }
 
-    function callsignFormatter(value, row, index, field) {
-        if (value != null) {
-            value = value.replaceAll(" ", "&nbsp;");
+    function dprsCallsignFormatter(value, row, index, field) {
+        var filterRed = "filter: invert(10%) sepia(61%) saturate(6238%) hue-rotate(11deg) brightness(100%) contrast(123%);"
+        var filterGreen = "filter: invert(32%) sepia(100%) saturate(1194%) hue-rotate(92deg) brightness(96%) contrast(103%);"
 
-            if(row._dprscallsign != null) {
-                value = "<a href=\"https://aprs.fi/" + row._dprscallsign + "\" target=_blank>" + value + "</a>";
-            }
-
-            return value;
-        }
-
-        return "";
+        return value = "<a href=\"https://aprs.fi/" + row._dprscallsign + "\" target=_blank><img src=\"./img/sat.png\" style=\""+ (value != null ? filterGreen : filterRed) + "\"/></a></div>";
     }
 
     function percentFormatter(value, row, index, field) {
