@@ -19,6 +19,11 @@ class DStarGateway
     {
         return $this->_conf->getConfigItem("Log", "fileRoot", "dstargateway") . ($wildcard ? "*.log" : "-" . gmdate("Y-m-d") . ".log");
     }
+
+    public function getGatewayName()
+    {
+        return $this->_conf->getConfigItem("Gateway", "callsign");
+    }
 }
 
 ?>

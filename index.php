@@ -1,5 +1,6 @@
 <?php
-    include_once("config.php");
+    require_once("config.php");
+    require_once("pgs/class.dstargateway.php");
 ?>
 <!doctype html>
 <html lang="en">
@@ -9,6 +10,11 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
         <link rel="stylesheet" href="css/botstraptablefixup.css">
         <link rel="stylesheet" href="css/dashboard.css">
+        <?php
+            $dstarGateway = new DStarGateway($DStarGateway["configurationfile"]);
+            $dstarGateway->init();
+            echo "<title>" . $dstarGateway->getGatewayName() . " Dashboard</title>\n";
+        ?>
     </head>
     <body>
         <div class="container-fluid" id="dashboard-content">
