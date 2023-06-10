@@ -13,6 +13,7 @@ class HeardItem
     public $_timedout;
     public $_transmissionlost;
     public $_istxing;
+    public $_rssi;
 
     public function __construct()
     {

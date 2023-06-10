@@ -40,7 +40,11 @@
             data-row-style="rowStyle">
             <thead class="thead-dark">
                 <tr>
-                    <th colspan="7" scope="col">Last Heard</th>
+                    <?php if($radioModule["showRSSI"]) { ?>
+                        <th colspan="8" scope="col">Last Heard</th>
+                    <?php } else {?>
+                        <th colspan="7" scope="col">Last Heard</th>
+                    <?php } ?>    
                 </tr>
                 <tr>
                     <th scope="col" data-field="_time">Time</th>
@@ -51,6 +55,9 @@
                     <th scope="col" data-field="_target"   data-formatter="callsignFormatter">Target</th>
                     <th scope="col" data-field="_source">Source</th>
                     <th scope="col" data-field="_berorloss" data-formatter="percentFormatter">BER/Loss</th>
+                    <?php if($radioModule["showRSSI"]) { ?>
+                        <th scope="col" data-field="_rssi" data-formatter="signalFormatter">Signal</th>
+                    <?php } ?>
                 </tr>
             </thead>
         </table>
@@ -115,6 +122,30 @@
         }
 
         return "&nbsp;"
+    }
+
+    // https://hamwaves.com/decibel/en/
+    function signalFormatter(value, row, index, field) {
+        if(value != null) {
+            var signal = 0;
+            var rssi = Number(value);
+            var r = -141;
+
+            signal = Math.floor((rssi + 141) / 6) + 1;
+            if(signal < 0) signal = 0;
+            if(signal > 9) signal = 9;
+
+            var dbOverS = rssi + 141 - Math.max(((signal - 1) * 6), 0);
+
+            return "S" + signal + "+" + pad(dbOverS, 2) + "dB";
+        }
+
+        return "&nbsp;"
+    }
+
+    function pad(num, size) {
+        var s = "000000000" + num;
+        return s.substr(s.length-size);
     }
     </script>
 </div>
