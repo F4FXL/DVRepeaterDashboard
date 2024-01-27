@@ -146,7 +146,7 @@ class MMDVMLog
             $heardItem->_source = $isRF? "RF" : "Net";
             $heardItem->_berorloss = $isRF? $matches[8][0] : $matches[7][0];
             $heardItem->_istxing = false;
-            $heardItem->_rssi = $matches[12][0];
+            if(count($matches) > 12) $heardItem->_rssi = $matches[12][0];
             
             return true;
         }
