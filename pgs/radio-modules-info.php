@@ -131,11 +131,12 @@
             var rssi = Number(value);
             var r = -141;
 
-            signal = Math.floor((rssi + 141) / 6) + 1;
+            signal = Math.floor((rssi + 141) / 6);
             if(signal < 0) signal = 0;
-            if(signal > 9) signal = 9;
+            if(signal > 8) signal = 8;
 
-            var dbOverS = rssi + 141 - Math.max(((signal - 1) * 6), 0);
+            var dbOverS = rssi + 141 - signal * 6;
+            signal ++;
 
             return "S" + signal + "+" + pad(dbOverS, 2) + "dB";
         }
